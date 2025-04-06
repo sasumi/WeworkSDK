@@ -17,7 +17,7 @@ class User extends AuthorizedService {
 	 */
 	public static function getUserIdByPhone($phone){
 		$url = '/cgi-bin/user/getuserid';
-		$rsp = self::sendRequest($url, ['mobile' => $phone]);
+		$rsp = self::postJson($url, ['mobile' => $phone]);
 		$rsp->assertSuccess();
 		return $rsp->get('userid');
 	}
@@ -36,7 +36,7 @@ class User extends AuthorizedService {
 			'fetch_child'   => $fetch_child,
 			'access_token'  => self::getAccessToken(),
 		];
-		$rsp = self::sendRequest($url, $param, false);
+		$rsp = self::getJson($url, $param);
 		if($rsp->isSuccess()){
 			return $rsp->get('userlist');
 		}
@@ -52,7 +52,7 @@ class User extends AuthorizedService {
 	public static function create($data){
 		$url = '/cgi-bin/user/create';
 		$param = $data;
-		$rsp = self::sendRequest($url, $param, false);
+		$rsp = self::getJson($url, $param);
 		$rsp->assertSuccess();
 		return true;
 	}
@@ -61,13 +61,12 @@ class User extends AuthorizedService {
 	 * 查询用户信息
 	 * @param $user_id
 	 * @return \LFPhp\WeworkSdk\Base\Response
-	 * @throws \LFPhp\WeworkSdk\Exception\ConnectException
 	 * @see https://work.weixin.qq.com/api/doc/90001/90143/90332
 	 */
 	public static function getInfo($user_id){
 		$url = '/cgi-bin/user/get';
 		$param = ['userid' => $user_id];
-		$rsp = self::sendRequest($url, $param, false);
+		$rsp = self::getJson($url, $param);
 		$rsp->assertSuccess();
 		return $rsp;
 	}
@@ -80,7 +79,7 @@ class User extends AuthorizedService {
 	public static function delete($user_id){
 		$url = '/cgi-bin/user/delete';
 		$param = ['userid' => $user_id];
-		$rsp = self::sendRequest($url, $param, false);
+		$rsp = self::getJson($url, $param);
 		$rsp->assertSuccess();
 		return true;
 	}
@@ -90,12 +89,11 @@ class User extends AuthorizedService {
 	 * @see https://open.work.weixin.qq.com/api/doc/90001/90143/95327#2.4%20userid%E7%9A%84%E8%BD%AC%E6%8D%A2
 	 * @param array $user_ids
 	 * @return array
-	 * @throws \LFPhp\WeworkSdk\Exception\ConnectException
 	 */
 	public static function userIdToOpenUserId(array $user_ids){
 		$url = '/cgi-bin/batch/userid_to_openuserid';
 		$param = ['userid_list' => $user_ids];
-		$rsp = self::sendRequest($url, $param);
+		$rsp = self::postJson($url, $param);
 		$rsp->assertSuccess();
 		return [
 			'open_userid_list'    => $rsp->get('open_userid_list'),

@@ -4,7 +4,6 @@ namespace LFPhp\WeworkSdk\Service\ExternalContact;
 
 use LFPhp\Logger\Logger;
 use LFPhp\WeworkSdk\Base\AuthorizedService;
-use LFPhp\WeworkSdk\Exception\ConnectException;
 
 class Tag extends AuthorizedService {
 	/**
@@ -43,7 +42,7 @@ class Tag extends AuthorizedService {
 		if($tag_ids){
 			$param['tag_id'] = $tag_ids;
 		}
-		$rsp = self::sendRequest($url, $param);
+		$rsp = self::postJson($url, $param);
 		$rsp->assertSuccess();
 		return $rsp->get('tag_group');
 	}
@@ -56,7 +55,7 @@ class Tag extends AuthorizedService {
 	 */
 	public static function create(array $data){
 		$url = '/cgi-bin/externalcontact/add_corp_tag';
-		$rsp = self::sendRequest($url, $data);
+		$rsp = self::postJson($url, $data);
 		$rsp->assertSuccess();
 		return $rsp->get('tag_group');
 	}
@@ -76,7 +75,7 @@ class Tag extends AuthorizedService {
 		if($order)
 			$param['order'] = $order;
 
-		$rsp = self::sendRequest($url, $param);
+		$rsp = self::postJson($url, $param);
 		$rsp->assertSuccess();
 		return true;
 	}
@@ -93,7 +92,7 @@ class Tag extends AuthorizedService {
 			'tag_id'   => $tag_id_list,
 			'group_id' => $group_id_list,
 		];
-		$rsp = self::sendRequest($url, $param);
+		$rsp = self::postJson($url, $param);
 		$rsp->assertSuccess();
 		return true;
 	}
@@ -105,7 +104,6 @@ class Tag extends AuthorizedService {
 	 * @param array $add_tags ["TAGID1","TAGID2"]
 	 * @param array $remove_tags ["TAGID3","TAGID4"]
 	 * @return bool
-	 * @throws ConnectException
 	 */
 	public static function markContact($user_id, $external_user_id, $add_tags = [], $remove_tags = []){
 		$url = '/cgi-bin/externalcontact/mark_tag';
@@ -117,7 +115,7 @@ class Tag extends AuthorizedService {
 		];
 		$logger = logger::instance(__CLASS__);
 		$logger->info("tag_data_request", $url, json_encode($param));
-		$rsp = self::sendRequest($url, $param);
+		$rsp = self::postJson($url, $param);
 		$rsp->assertSuccess();
 		return true;
 	}

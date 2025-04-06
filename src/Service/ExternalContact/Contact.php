@@ -17,7 +17,7 @@ class Contact extends AuthorizedService {
 	 */
 	public static function getList($user_id){
 		$url = '/cgi-bin/externalcontact/list';
-		$rsp = self::sendRequest($url, ['userid' => $user_id], false);
+		$rsp = self::getJson($url, ['userid' => $user_id]);
 		if(!$rsp->isSuccess()){
 			return [];
 		}
@@ -61,13 +61,11 @@ class Contact extends AuthorizedService {
 	 * 获取客户详情
 	 * @param $external_user_id
 	 * @return array
-	 * @throws \GuzzleHttp\Exception\GuzzleException
-	 * @throws \LFPhp\WeworkSdk\Exception\ConnectException
 	 * @see https://work.weixin.qq.com/api/doc/90001/90143/92265
 	 */
 	public static function getInfo($external_user_id){
 		$url = '/cgi-bin/externalcontact/get';
-		$rsp = self::sendRequest($url, ['external_userid' => $external_user_id], false);
+		$rsp = self::getJson($url, ['external_userid' => $external_user_id]);
 		if(!$rsp->isSuccess()){
 			return [];
 		}
@@ -99,7 +97,7 @@ class Contact extends AuthorizedService {
 			'userid'          => $user_id,
 			'external_userid' => $external_user_id,
 		], $remark_info);
-		$rsp = self::sendRequest($url, $param);
+		$rsp = self::postJson($url, $param);
 		$rsp->assertSuccess();
 		return true;
 	}
@@ -111,7 +109,6 @@ class Contact extends AuthorizedService {
 	 * @param string $cursor
 	 * @param int $limit
 	 * @return array
-	 * @throws \LFPhp\WeworkSdk\Exception\ConnectException
 	 */
 	public static function batchGetUser(array $user_ids, $cursor = '', $limit = 100){
 		$url = '/cgi-bin/externalcontact/batch/get_by_user';
@@ -120,8 +117,7 @@ class Contact extends AuthorizedService {
 			'cursor'      => $cursor,
 			'limit'       => $limit,
 		];
-		$retries = 3;
-		$rsp = self::sendRequest($url, $param, 'true', [], $retries);
+		$rsp = self::postJson($url, $param);
 		if(!$rsp->isSuccess()){
 			return [[], ''];
 		}
@@ -133,14 +129,13 @@ class Contact extends AuthorizedService {
 	 * @see https://open.work.weixin.qq.com/api/doc/90001/90143/95327#%E8%BD%AC%E6%8D%A2external_userid
 	 * @param array $external_userids
 	 * @return array|mixed|null
-	 * @throws \LFPhp\WeworkSdk\Exception\ConnectException
 	 */
 	public static function getNewExternalUserId(array $external_userids){
 		$url = '/cgi-bin/externalcontact/get_new_external_userid';
 		$param = [
 			'external_userid_list' => $external_userids,
 		];
-		$rsp = self::sendRequest($url, $param);
+		$rsp = self::postJson($url, $param);
 		$rsp->assertSuccess();
 		return $rsp->get('items');
 	}
@@ -150,15 +145,13 @@ class Contact extends AuthorizedService {
 	 * @see https://open.work.weixin.qq.com/api/doc/90001/90143/95195
 	 * @param $external_userid
 	 * @return array|mixed
-	 * @throws \GuzzleHttp\Exception\GuzzleException
-	 * @throws \LFPhp\WeworkSdk\Exception\ConnectException
 	 */
 	public static function toServiceExternalUserId($external_userid){
 		$url = '/cgi-bin/externalcontact/to_service_external_userid';
 		$param = [
 			'external_userid' => $external_userid,
 		];
-		$rsp = self::sendRequest($url, $param);
+		$rsp = self::postJson($url, $param);
 		$rsp->assertSuccess();
 		return $rsp->get('external_userid');
 	}

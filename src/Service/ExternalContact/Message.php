@@ -2,7 +2,6 @@
 namespace LFPhp\WeworkSdk\Service\ExternalContact;
 
 use LFPhp\WeworkSdk\Base\AuthorizedService;
-use LFPhp\WeworkSdk\Exception\ConnectException;
 
 class Message extends AuthorizedService {
 	const CHAT_TYPE_SINGLE = 'single';
@@ -39,7 +38,6 @@ class Message extends AuthorizedService {
 	 * @param $sender
 	 * @param string $chat_type single、group
 	 * @return array [msgid, fail_id_list]
-	 * @throws ConnectException
 	 */
 	public static function sendMessage($content, array $receiver_list, $sender, $chat_type){
 		$uri = "/cgi-bin/externalcontact/add_msg_template";
@@ -49,7 +47,7 @@ class Message extends AuthorizedService {
 			"external_userid" => $receiver_list,
 		];
 		$param = array_merge($param, $content);
-		$rsp = self::sendRequest($uri, $param);
+		$rsp = self::postJson($uri, $param);
 		if($rsp->code == 41048){
 			return ['', $rsp->get('fail_list')]; //全部员工均不可发送
 		}
@@ -61,14 +59,13 @@ class Message extends AuthorizedService {
 	 * 获取群消息发送结果
 	 * @param $wxMsgId
 	 * @return array|mixed|null
-	 * @throws ConnectException
 	 */
 	public static function getMsgRecode($wxMsgId){
 		$uri = "/cgi-bin/externalcontact/get_group_msg_result";
 		$param = [
 			"msgid" => $wxMsgId,
 		];
-		$rsp = self::sendRequest($uri, $param);
+		$rsp = self::postJson($uri, $param);
 		return $rsp->get('detail_list');
 	}
 
@@ -78,7 +75,6 @@ class Message extends AuthorizedService {
 	 * @param array $result
 	 * @param string $cursor
 	 * @return array
-	 * @throws ConnectException
 	 */
 	public static function getGroupMsgTask(string $msgId, &$result = [], $cursor = ''){
 		$uri = "/cgi-bin/externalcontact/get_groupmsg_task";
@@ -87,7 +83,7 @@ class Message extends AuthorizedService {
 			'cursor' => $cursor,
 			'limit'  => 1000,
 		];
-		$rsp = self::sendRequest($uri, $param);
+		$rsp = self::postJson($uri, $param);
 		$rsp->assertSuccess();
 		$cursor = $rsp->next_cursor;
 		$taskList = $rsp->task_list;
@@ -107,7 +103,6 @@ class Message extends AuthorizedService {
 	 * @param array $result 结果集
 	 * @param string $cursor 偏移量
 	 * @return array
-	 * @throws ConnectException
 	 */
 	public static function getGroupMsgSendResult(string $msgId, string $userId, &$result = [], $cursor = ''){
 		$uri = "/cgi-bin/externalcontact/get_group_msg_result";
@@ -117,7 +112,7 @@ class Message extends AuthorizedService {
 			'limit'  => 10000,
 			'cursor' => $cursor,
 		];
-		$rsp = self::sendRequest($uri, $param);
+		$rsp = self::postJson($uri, $param);
 		if($rsp->code != 0)
 			return [];
 		$cursor = $rsp->next_cursor;

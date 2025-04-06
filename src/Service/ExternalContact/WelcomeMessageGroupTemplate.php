@@ -18,7 +18,7 @@ class WelcomeMessageGroupTemplate extends AuthorizedService {
 	 */
 	public static function addTemplate($template_info){
 		$url = '/cgi-bin/externalcontact/group_welcome_template/add';
-		$rsp = self::sendRequest($url, $template_info);
+		$rsp = self::postJson($url, $template_info);
 		$rsp->assertSuccess();
 		return $rsp->get('template_id');
 	}
@@ -27,12 +27,11 @@ class WelcomeMessageGroupTemplate extends AuthorizedService {
 	 * 编辑模板
 	 * @param $template_id
 	 * @param $template_info
-	 * @throws \LFPhp\WeworkSdk\Exception\ConnectException
 	 */
 	public static function editTemplate($template_id, $template_info){
 		$template_info['template_id'] = $template_id;
 		$url = '/cgi-bin/externalcontact/group_welcome_template/edit';
-		$rsp = self::sendRequest($url, $template_info);
+		$rsp = self::postJson($url, $template_info);
 		$rsp->assertSuccess();
 	}
 
@@ -40,11 +39,10 @@ class WelcomeMessageGroupTemplate extends AuthorizedService {
 	 * 获取欢迎语模板信息
 	 * @param string $template_id
 	 * @return object
-	 * @throws \LFPhp\WeworkSdk\Exception\ConnectException
 	 */
 	public static function getTemplateInfo($template_id){
 		$url = '/cgi-bin/externalcontact/group_welcome_template/edit';
-		$rsp = self::sendRequest($url, ['template_id' => $template_id]);
+		$rsp = self::postJson($url, ['template_id' => $template_id]);
 		$rsp->assertSuccess();
 		return $rsp->data;
 	}
@@ -54,13 +52,12 @@ class WelcomeMessageGroupTemplate extends AuthorizedService {
 	 * @param $template_id
 	 * @param $agentid
 	 * @return \LFPhp\WeworkSdk\Base\Response
-	 * @throws \LFPhp\WeworkSdk\Exception\ConnectException
 	 */
 	public static function delTemplate($template_id, $agentid = null){
 		$params['template_id'] = $template_id;
 		$params['agentid'] = $agentid;
 		$url = '/cgi-bin/externalcontact/group_welcome_template/del';
-		$rsp = self::sendRequest($url, $params);
+		$rsp = self::postJson($url, $params);
 		return $rsp;
 	}
 }

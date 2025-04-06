@@ -30,7 +30,7 @@ class Report extends AuthorizedService {
 			"end_time"   => $end_time,
 		];
 		//需要用post方法
-		$rsp = self::sendRequest($url, $param, true);
+		$rsp = self::postJson($url, $param);
 		if(isset($rsp->data['errcode']) && $rsp->data['errcode'] == 40003){
 			//无效的userId返回空数组
 			return [];

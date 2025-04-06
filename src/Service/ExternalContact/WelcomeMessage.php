@@ -10,13 +10,13 @@ class WelcomeMessage extends AuthorizedService {
 	 * @param $welcome_code
 	 * @param $msg_info
 	 * @return \LFPhp\WeworkSdk\Base\Response
-	 * @throws \LFPhp\WeworkSdk\Exception\ConnectException User: Richard
+	 * User: Richard
 	 * @see https://open.work.weixin.qq.com/api/doc/90000/90135/92137
 	 */
 	public static function sendMessage($welcome_code, $msg_info){
 		$url = '/cgi-bin/externalcontact/send_welcome_msg';
 		$param = array_merge(['welcome_code' => $welcome_code], $msg_info);
-		$rsp = self::sendRequest($url, $param);
+		$rsp = self::postJson($url, $param);
 		return $rsp;
 	}
 }

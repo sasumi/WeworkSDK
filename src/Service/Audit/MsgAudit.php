@@ -26,7 +26,7 @@ class MsgAudit extends AuthorizedService {
 		if(!empty($type)){
 			$params['type'] = $type;
 		}
-		$rsp = self::sendRequest($url, $params);
+		$rsp = self::postJson($url, $params);
 		if(!$rsp->isSuccess()){
 			return [];
 		}
@@ -57,7 +57,7 @@ class MsgAudit extends AuthorizedService {
 	 */
 	public static function getInternalChatInfo($room_id){
 		$url = '/cgi-bin/msgaudit/groupchat/get';
-		$rsp = self::sendRequest($url, ['roomid' => $room_id]);
+		$rsp = self::postJson($url, ['roomid' => $room_id]);
 		if(!$rsp->isSuccess()){
 			return [];
 		}
@@ -105,7 +105,7 @@ class MsgAudit extends AuthorizedService {
 		$params = [
 			'info' => $tmpArr,
 		];
-		$rsp = self::sendRequest($url, $params);
+		$rsp = self::postJson($url, $params);
 		if(!$rsp->isSuccess()){
 			return [];
 		}
@@ -116,14 +116,13 @@ class MsgAudit extends AuthorizedService {
 	 * 获取群会话同意状态
 	 * @param string $roomId
 	 * @return array|mixed|null
-	 * @throws \LFPhp\WeworkSdk\Exception\ConnectException
 	 */
 	public static function checkRoomAgree(string $roomId){
 		$url = '/cgi-bin/msgaudit/check_room_agree';
 		$params = [
 			'roomid' => $roomId,
 		];
-		$rsp = self::sendRequest($url, $params);
+		$rsp = self::postJson($url, $params);
 		if(!$rsp->isSuccess()){
 			return [];
 		}

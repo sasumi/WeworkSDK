@@ -58,7 +58,7 @@ class JSApi extends AuthorizedService {
 		if($ticket = $js_api_ticket_cache_handler($access_token)){
 			return $ticket;
 		}
-		$rsp = self::sendRequest($url, [], false);
+		$rsp = self::getJson($url, []);
 		$rsp->assertSuccess();
 		$ticket = $rsp->get('ticket');
 		$expires_in = $rsp->get('expires_in');
@@ -82,7 +82,7 @@ class JSApi extends AuthorizedService {
 			$logger->info('get_jsapi_ticket_app from cache:', $ticket);
 			return $ticket;
 		}
-		$rsp = self::sendRequest($url, ['type' => 'agent_config'], false);
+		$rsp = self::getJson($url, ['type' => 'agent_config']);
 		$rsp->assertSuccess();
 		$ticket = $rsp->get('ticket');
 		$expires_in = $rsp->get('expires_in');

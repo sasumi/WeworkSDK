@@ -16,7 +16,6 @@ class Group extends AuthorizedService {
 	 * @param int $limit
 	 * @param null $cursor
 	 * @return array [ [[chat_id=>chat_id, status=>status], ...], next_cursor]
-	 * @throws \LFPhp\WeworkSdk\Exception\ConnectException
 	 * @see https://open.work.weixin.qq.com/api/doc/90001/90143/93414
 	 */
 	public static function getGroupList($status_filter = self::GROUP_STATUS_FILTER_ALL, $owner_user_id_list = [], $limit = 1000, $cursor = null){
@@ -31,7 +30,7 @@ class Group extends AuthorizedService {
 		if($cursor){
 			$param['cursor'] = $cursor;
 		}
-		$rsp = self::sendRequest($url, $param, true);
+		$rsp = self::postJson($url, $param);
 		$rsp->assertSuccess();
 		return [$rsp->get('group_chat_list'), $rsp->get('next_cursor')];
 	}
@@ -84,7 +83,7 @@ class Group extends AuthorizedService {
 			'chat_id'   => $chat_id,
 			'need_name' => 1,
 		];
-		return self::sendRequest($url, $params);
+		return self::postJson($url, $params);
 	}
 
 	/**
@@ -94,7 +93,6 @@ class Group extends AuthorizedService {
 	 * @param $day_end_time
 	 * @param $owner_list
 	 * @return \LFPhp\WeworkSdk\Base\Response
-	 * @throws \LFPhp\WeworkSdk\Exception\ConnectException
 	 */
 	public static function statisticByDay($day_begin_time, $day_end_time, $owner_list){
 		$url = 'cgi-bin/externalcontact/groupchat/statistic_group_by_day';
@@ -105,7 +103,7 @@ class Group extends AuthorizedService {
 				'userid_list' => $owner_list,
 			],
 		];
-		return self::sendRequest($url, $params);
+		return self::postJson($url, $params);
 	}
 
 	/**
@@ -117,7 +115,6 @@ class Group extends AuthorizedService {
 	 * @param $limit
 	 * @param $offset
 	 * @return \LFPhp\WeworkSdk\Base\Response
-	 * @throws \LFPhp\WeworkSdk\Exception\ConnectException
 	 */
 	public static function statisticByOwnerList($day_begin_time, $day_end_time, $owner_list, $limit = 500, $offset = 0){
 		$url = 'cgi-bin/externalcontact/groupchat/statistic';
@@ -131,7 +128,7 @@ class Group extends AuthorizedService {
 			'offset'         => $offset,
 		];
 		//需要用post方法
-		$rsp = self::sendRequest($url, $params, true);
+		$rsp = self::postJson($url, $params);
 		$result = $rsp->jsonSerialize();
 		return $result['data'];
 	}

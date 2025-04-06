@@ -18,7 +18,7 @@ class ContactWay extends AuthorizedService {
 	 */
 	public static function getFollowUserList(){
 		$url = '/cgi-bin/externalcontact/get_follow_user_list';
-		$rsp = self::sendRequest($url, [], false);
+		$rsp = self::getJson($url);
 		$rsp->assertSuccess();
 		return $rsp->get('follow_user');
 	}
@@ -31,7 +31,7 @@ class ContactWay extends AuthorizedService {
 	 */
 	public static function create($data){
 		$url = '/cgi-bin/externalcontact/add_contact_way';
-		$rsp = self::sendRequest($url, $data);
+		$rsp = self::postJson($url, $data);
 		$rsp->assertSuccess();
 		return [$rsp->get('config_id'), $rsp->get('qr_code')];
 	}
@@ -44,7 +44,7 @@ class ContactWay extends AuthorizedService {
 	 */
 	public static function update($data){
 		$url = '/cgi-bin/externalcontact/update_contact_way';
-		$rsp = self::sendRequest($url, $data);
+		$rsp = self::postJson($url, $data);
 		$rsp->assertSuccess();
 		return true;
 	}
@@ -52,11 +52,10 @@ class ContactWay extends AuthorizedService {
 	/**删除「联系我」
 	 * @param $config_id
 	 * @return \LFPhp\WeworkSdk\Base\Response
-	 * @throws \LFPhp\WeworkSdk\Exception\ConnectException
 	 */
 	public static function delete($config_id){
 		$url = '/cgi-bin/externalcontact/del_contact_way';
-		$rsp = self::sendRequest($url, ['config_id' => $config_id]);
+		$rsp = self::postJson($url, ['config_id' => $config_id]);
 		return $rsp;
 	}
 
@@ -67,7 +66,7 @@ class ContactWay extends AuthorizedService {
 	 */
 	public static function getInfo($config_id){
 		$url = '/cgi-bin/externalcontact/get_contact_way';
-		$rsp = self::sendRequest($url, ['config_id' => $config_id]);
+		$rsp = self::postJson($url, ['config_id' => $config_id]);
 		$rsp->assertSuccess();
 		return $rsp->get('contact_way');
 	}
@@ -80,7 +79,7 @@ class ContactWay extends AuthorizedService {
 	 */
 	public static function closeTempChat($user_id, $external_user_id){
 		$url = '/cgi-bin/externalcontact/close_temp_chat';
-		$rsp = self::sendRequest($url, [
+		$rsp = self::postJson($url, [
 			'userid'          => $user_id,
 			'external_userid' => $external_user_id,
 		]);

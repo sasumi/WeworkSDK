@@ -3,9 +3,6 @@
 namespace LFPhp\WeworkSdk\Service;
 
 use Exception;
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
-use LFPhp\Logger\Logger;
 use LFPhp\WeworkSdk\Base\AuthorizedService;
 use function LFPhp\Func\format_size;
 
@@ -36,27 +33,11 @@ class Media extends AuthorizedService {
 	 * @param string $file_name 文件名
 	 * @return array [media_id, created_at]
 	 * @throws Exception
-	 * @throws GuzzleException
 	 */
 	public static function uploadMedia($type, $file, $file_name){
-		$logger = Logger::instance(__CLASS__);
 		self::validateFile($type, $file);
-		$client = new Client();
 		$access_token = self::getAccessToken();
-		$response = $client->request('POST', self::WEWORK_HOST.'/cgi-bin/media/upload?access_token='.$access_token.'&type='.$type, [
-			'multipart' => [
-				[
-					'name'     => 'media',
-					'filename' => $file_name,
-					'contents' => fopen($file, 'r'),
-				],
-			],
-		]);
-		$logger->info(__METHOD__, $response);
-		$resArr = @json_decode($response->getbody()->getContents(), true);
-		if(!$resArr){
-			throw new Exception('Response not in JSON format:'.$response->getBody()->getContents());
-		}
+		$resArr = self::postFile(self::WEWORK_HOST.'/cgi-bin/media/upload?access_token='.$access_token.'&type='.$type, [], [$file_name => $file]);
 		if($resArr['errcode'] != 0){
 			throw new Exception('上传失败：'.$resArr['errmsg']);
 		}
@@ -71,22 +52,11 @@ class Media extends AuthorizedService {
 	 * @param $file
 	 * @return string 图片URL
 	 * @throws Exception
-	 * @throws GuzzleException
 	 */
 	public static function uploadImagePermanent($file){
 		self::validateFile(self::TYPE_IMAGE, $file);
-		$client = new Client();
 		$access_token = self::getAccessToken();
-		$response = $client->request('POST', self::WEWORK_HOST.'/cgi-bin/media/uploadimg?access_token='.$access_token, [
-			'multipart' => [
-				[
-					'name'     => 'file_name',
-					'contents' => fopen($file, 'r'),
-				],
-			],
-		]);
-		Logger::instance(__CLASS__)->info(__METHOD__, $response);
-		$resArr = json_decode($response->getbody()->getContents(), true);
+		$resArr = self::postFile(self::WEWORK_HOST.'/cgi-bin/media/uploadimg?access_token='.$access_token, [], ['file_name' => $file]);
 		if($resArr['errcode'] != 0){
 			throw new Exception('上传失败：'.$resArr['errmsg']);
 		}
@@ -109,7 +79,6 @@ class Media extends AuthorizedService {
 	 * @param $file
 	 * @param $filename
 	 * @return string 图片URL
-	 * @throws GuzzleException
 	 * @throws Exception
 	 */
 	public static function uploadImageTemporary($file, $filename){

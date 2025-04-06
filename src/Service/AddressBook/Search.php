@@ -72,7 +72,7 @@ class Search extends Service {
 
 		$logger->info("Address Book Param: ", $url, json_encode($param), "\r\n");
 
-		$rsp = self::sendRequest($url, $param);
+		$rsp = self::postJson($url, $param);
 		$rsp->assertSuccess();
 
 		$is_last = $rsp->get('query_result_list.is_last');
@@ -95,8 +95,6 @@ class Search extends Service {
 	 * @param int $query_type
 	 * @param null $match_type
 	 * @return array
-	 * @throws \GuzzleHttp\Exception\GuzzleException
-	 * @throws \LFPhp\WeworkSdk\Exception\ConnectException
 	 */
 	public static function contactSingleSearch($keyword, $start = 0, $size = 50, $query_type = self::QUERY_BOTH, $match_type = null){
 		$logger = logger::instance(__CLASS__);
@@ -119,7 +117,7 @@ class Search extends Service {
 			'offset'      => $start,
 			'limit'       => $size,
 		];
-		$rsp = self::sendRequest($url, $param);
+		$rsp = self::postJson($url, $param);
 		$rsp->assertSuccess();
 		$is_last = $rsp->get('is_last');
 		$user_id_list = $rsp->get('query_result.user.userid', []);

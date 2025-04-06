@@ -44,7 +44,6 @@ class AppMessage extends AuthorizedService {
 	 * @param string[] $to_tags
 	 * @return array [无效用户ID列表, 无效部门列表, 无效标签列表
 	 * @throws \\Exception
-	 * @throws \LFPhp\WeworkSdk\Exception\ConnectException
 	 */
 	public function sendMessage(MessagePrototype $content, array $to_users = [], array $to_parties = [], array $to_tags = []){
 		$uri = "/cgi-bin/message/send";
@@ -70,7 +69,7 @@ class AppMessage extends AuthorizedService {
 			$param['totag'] = implode('|', $to_tags);
 		}
 		$param[$content_type] = $content->toArray();
-		$rsp = self::sendRequest($uri, $param);
+		$rsp = self::postJson($uri, $param);
 		$rsp->assertSuccess();
 		$invalid_users = $rsp->get('invaliduser') ? explode('|', $rsp->get('invaliduser')) : [];
 		$invalid_parties = $rsp->get('invalidparty') ? explode('|', $rsp->get('invalidparty')) : [];

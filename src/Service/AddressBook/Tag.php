@@ -12,7 +12,7 @@ class Tag extends AuthorizedService {
 	 */
 	public static function getList(){
 		$url = '/cgi-bin/tag/list';
-		$rsp = self::sendRequest($url, [], false);
+		$rsp = self::getJson($url, []);
 		$rsp->assertSuccess();
 		$list = $rsp->get('taglist');
 		if($list){
@@ -37,7 +37,7 @@ class Tag extends AuthorizedService {
 			'tagname' => $name,
 			'tagid'   => $tag_id,
 		];
-		$rsp = self::sendRequest($url, $param, false);
+		$rsp = self::getJson($url, $param);
 		$rsp->assertSuccess();
 		return $rsp->get('tagid');
 	}
@@ -54,7 +54,7 @@ class Tag extends AuthorizedService {
 			'tagname' => $name,
 			'tagid'   => $tag_id,
 		];
-		$rsp = self::sendRequest($url, $param, false);
+		$rsp = self::getJson($url, $param);
 		$rsp->assertSuccess();
 		return true;
 	}
@@ -69,7 +69,7 @@ class Tag extends AuthorizedService {
 		$param = [
 			'tagid' => $tag_id,
 		];
-		$rsp = self::sendRequest($url, $param, false);
+		$rsp = self::getJson($url, $param);
 		$rsp->assertSuccess();
 		return true;
 	}
@@ -84,7 +84,7 @@ class Tag extends AuthorizedService {
 		$param = [
 			'tagid' => $tag_id,
 		];
-		$rsp = self::sendRequest($url, $param, false);
+		$rsp = self::getJson($url, $param);
 		$rsp->assertSuccess();
 		return [
 			'tag_name'      => $rsp->get('tagname'),
@@ -130,7 +130,7 @@ class Tag extends AuthorizedService {
 			'userlist'  => $user_list,
 			'partylist' => $party_list,
 		];
-		$rsp = self::sendRequest($url, $param, false);
+		$rsp = self::getJson($url, $param);
 		$rsp->assertSuccess();
 
 		$invalid_list = $rsp->get('invalidlist');

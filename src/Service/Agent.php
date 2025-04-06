@@ -7,7 +7,7 @@ use LFPhp\WeworkSdk\Base\AuthorizedService;
 class Agent extends AuthorizedService {
 	public static function getAgentInfo($agent_id){
 		$url = '/cgi-bin/agent/get';
-		$rsp = self::sendRequest($url, ['agentid' => $agent_id], false);
+		$rsp = self::getJson($url, ['agentid' => $agent_id]);
 		$rsp->assertSuccess();
 
 		$allow_user_ids = [];
@@ -35,11 +35,10 @@ class Agent extends AuthorizedService {
 	/**
 	 * 企业仅可获取当前凭证对应的应用；第三方仅可获取被授权的应用。
 	 * @return array [[agentid, name, square_log_url], ...]
-	 * @throws \LFPhp\WeworkSdk\Exception\ConnectException
 	 */
 	public static function getAgentList(){
 		$url = '/cgi-bin/agent/list';
-		$rsp = self::sendRequest($url, null, false);
+		$rsp = self::getJson($url);
 		$rsp->assertSuccess();
 		return $rsp->get('agentlist');
 	}

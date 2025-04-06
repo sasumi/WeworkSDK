@@ -17,7 +17,7 @@ class Department extends AuthorizedService {
 		$param = [
 			'id' => $department_id,
 		];
-		$rsp = self::sendRequest($url, $param, false);
+		$rsp = self::getJson($url, $param);
 		$rsp->assertSuccess();
 		return $rsp->get('department');
 	}
@@ -36,7 +36,7 @@ class Department extends AuthorizedService {
 			'order'     => $data['order'], //在父部门中的次序值。order值大的排序靠前。有效的值范围是[0, 2^32)
 			'id'        => $data['id'], //部门id，32位整型，指定时必须大于1。若不填该参数，将自动生成id
 		];
-		$rsp = self::sendRequest($url, $param);
+		$rsp = self::postJson($url, $param);
 		$rsp->assertSuccess();
 		return $rsp->get('id');
 	}
@@ -55,7 +55,7 @@ class Department extends AuthorizedService {
 			'order'     => $data['order'],
 			'id'        => $data['id'],
 		];
-		$rsp = self::sendRequest($url, $param);
+		$rsp = self::postJson($url, $param);
 		$rsp->assertSuccess();
 		return true;
 	}
@@ -70,7 +70,7 @@ class Department extends AuthorizedService {
 		$param = [
 			'id' => $department_id,
 		];
-		$rsp = self::sendRequest($url, $param);
+		$rsp = self::postJson($url, $param);
 		$rsp->assertSuccess();
 		return true;
 	}

@@ -3,8 +3,6 @@
 namespace LFPhp\WeworkSdk\Base;
 
 use Exception;
-use GuzzleHttp\Exception\GuzzleException;
-use LFPhp\WeworkSdk\Exception\ConnectException;
 
 /**
  * 已授权access_token服务
@@ -51,40 +49,14 @@ abstract class AuthorizedService extends Service {
 		return self::$access_token;
 	}
 
-	/**
-	 * 重写sendRequest，增加access_token参数
-	 * @param $url
-	 * @param array $param
-	 * @param bool $in_post
-	 * @param array $files
-	 * @param int $retries 重试次数 默认为0 代表不重试 仅请求一次
-	 * @return Response
-	 * @throws ConnectException
-	 * @throws GuzzleException
-	 */
-	public static function sendRequest($url, array $param = [], $in_post = true, $files = [], $retries = 0){
+	public static function getJson($url, $param = []){
+		$param['access_token'] = self::getAccessToken();
+		return parent::getJson($url, $param);
+	}
+
+	public static function postJson($url, $param){
 		$url .= (strpos($url, '?') !== false ? '&' : '?').'access_token='.static::getAccessToken();
-		if(!$in_post){
-			$param['access_token'] = self::getAccessToken();
-		}
-		$result = null;
-		for($i = 0; $i <= $retries; $i++){
-			try{
-				$result = parent::sendRequest($url, $param, $in_post, $files);
-				break;
-			}catch(\GuzzleHttp\Exception\ConnectException $e){
-				//请求超时
-				if(strrpos($e->getMessage(), 'Empty reply from server') !== false || strrpos($e->getMessage(), 'Operation timed out') !== false){
-					if($i == $retries){
-						//尝试重试$retries次后还是失败 抛出异常 让系统捕获记录异常日志
-						throw $e;
-					}
-					//重试
-					sleep(mt_rand(1, 3));
-					continue;
-				}
-			}
-		}
-		return $result;
+		$param['access_token'] = self::getAccessToken();
+		return parent::postJson($url, $param);
 	}
 }

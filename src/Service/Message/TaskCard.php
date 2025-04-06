@@ -15,7 +15,6 @@ class TaskCard extends AuthorizedService {
 	 * @param string[] $user_ids
 	 * @param string $clicked_key
 	 * @return array
-	 * @throws \LFPhp\WeworkSdk\Exception\ConnectException
 	 */
 	public static function updateTaskCard($agent_id, $task_id, array $user_ids, $clicked_key){
 		$uri = "/cgi-bin/message/update_taskcard";
@@ -25,7 +24,7 @@ class TaskCard extends AuthorizedService {
 			"task_id"     => $task_id,
 			"clicked_key" => $clicked_key,
 		];
-		$rsp = self::sendRequest($uri, $param);
+		$rsp = self::postJson($uri, $param);
 		$rsp->assertSuccess();
 		return $rsp->get('invaliduser');
 	}

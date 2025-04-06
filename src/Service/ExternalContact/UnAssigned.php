@@ -18,7 +18,7 @@ class UnAssigned extends AuthorizedService {
 	 */
 	public static function getList($page_index = 0, $page_size = 1000){
 		$url = '/cgi-bin/externalcontact/get_unassigned_list';
-		$rsp = self::sendRequest($url, [
+		$rsp = self::postJson($url, [
 			'page_id'   => $page_index,
 			'page_size' => $page_size,
 		]);
@@ -37,7 +37,7 @@ class UnAssigned extends AuthorizedService {
 	 */
 	public static function transfer($external_user_id, $handover_user_id, $takeover_user_id){
 		$url = '/cgi-bin/externalcontact/transfer';
-		$rsp = self::sendRequest($url, [
+		$rsp = self::postJson($url, [
 			'external_userid' => $external_user_id,
 			'handover_userid' => $handover_user_id,
 			'takeover_userid' => $takeover_user_id,

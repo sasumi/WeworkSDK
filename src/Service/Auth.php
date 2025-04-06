@@ -3,7 +3,6 @@
 namespace LFPhp\WeworkSdk\Service;
 
 use LFPhp\WeworkSdk\Base\Service;
-use LFPhp\WeworkSdk\Exception\ConnectException;
 
 class Auth extends Service {
 	/**
@@ -16,7 +15,7 @@ class Auth extends Service {
 		$params = [
 			'suite_access_token' => $suite_access_token,
 		];
-		$rsp = self::sendRequest($url, $params, false);
+		$rsp = self::getJson($url, $params);
 		$rsp->assertSuccess();
 		return $rsp->get('pre_auth_code');
 	}
@@ -33,7 +32,7 @@ class Auth extends Service {
 			"corpid"          => $corp_id,
 			"provider_secret" => $provider_secret,
 		];
-		$rsp = self::sendRequest($url, $param);
+		$rsp = self::postJson($url, $param);
 		$rsp->assertSuccess();
 		return $rsp->data['provider_access_token'];
 	}
@@ -42,15 +41,13 @@ class Auth extends Service {
 	 * @param $suite_access_token
 	 * @param $auth_code
 	 * @return \LFPhp\WeworkSdk\Base\Response
-	 * @throws \GuzzleHttp\Exception\GuzzleException
-	 * @throws \LFPhp\WeworkSdk\Exception\ConnectException
 	 */
 	public static function getPermanentCode($suite_access_token, $auth_code){
 		$url = '/cgi-bin/service/get_permanent_code?suite_access_token='.$suite_access_token;
 		$param = [
 			"auth_code" => $auth_code,
 		];
-		$rsp = self::sendRequest($url, $param);
+		$rsp = self::postJson($url, $param);
 		$rsp->assertSuccess();
 		return $rsp;
 	}
@@ -72,7 +69,7 @@ class Auth extends Service {
 			"auth_corpid"    => $auth_corp_id,
 			"permanent_code" => $permanent_code,
 		];
-		$rsp = self::sendRequest($url, $param);
+		$rsp = self::postJson($url, $param);
 		$rsp->assertSuccess();
 		return [$rsp->get('access_token'), $rsp->get('expires_in')];
 	}
@@ -82,7 +79,6 @@ class Auth extends Service {
 	 * @param $corp_id
 	 * @param $corp_secret
 	 * @return array
-	 * @throws ConnectException
 	 */
 	public static function getAccessTokenByCorpSecret($corp_id, $corp_secret){
 		$url = '/cgi-bin/gettoken';
@@ -90,7 +86,7 @@ class Auth extends Service {
 			"corpid"     => $corp_id,
 			"corpsecret" => $corp_secret,
 		];
-		$rsp = self::sendRequest($url, $param, false);
+		$rsp = self::getJson($url, $param);
 		$rsp->assertSuccess();
 		return [$rsp->get('access_token'), $rsp->get('expires_in')];
 	}
@@ -99,7 +95,6 @@ class Auth extends Service {
 	 * @param $suite_access_token
 	 * @param $pre_auth_code
 	 * @param int $auth_type
-	 * @throws ConnectException
 	 */
 	public static function setSessionInfo($suite_access_token, $pre_auth_code, $auth_type = 0){
 		$url = 'https://qyapi.weixin.qq.com/cgi-bin/service/set_session_info?suite_access_token='.$suite_access_token;
@@ -109,7 +104,7 @@ class Auth extends Service {
 				"auth_type" => $auth_type,
 			],
 		];
-		$rsp = self::sendRequest($url, $param);
+		$rsp = self::postJson($url, $param);
 		$rsp->assertSuccess();
 	}
 
@@ -140,7 +135,7 @@ class Auth extends Service {
 			"auth_code" => $auth_code,
 		];
 
-		$rsp = self::sendRequest($url, $param);
+		$rsp = self::postJson($url, $param);
 		$rsp->assertSuccess();
 		return $rsp->data;
 	}
@@ -162,7 +157,7 @@ class Auth extends Service {
 			"suite_secret" => $suite_secret,
 			"suite_ticket" => $suite_ticket,
 		];
-		$rsp = self::sendRequest($url, $param);
+		$rsp = self::postJson($url, $param);
 		$rsp->assertSuccess();
 		$suite_access_token = $rsp->get('suite_access_token');
 		$expires_in = $rsp->get('expires_in');
@@ -182,7 +177,7 @@ class Auth extends Service {
 			'auth_corpid' => $corp_id,
 			'agentid'     => $agent_id,
 		];
-		$rsp = self::sendRequest($url, $param);
+		$rsp = self::postJson($url, $param);
 		$rsp->assertSuccess();
 		return $rsp->get('admin');
 	}
@@ -201,14 +196,13 @@ class Auth extends Service {
 	 *      expires_in => user_ticket的有效时间（秒
 	 *      open_userid => 全局唯一。对于同一个服务商，不同应用获取到企业内同一个成员的open_userid是相同的
 	 * ]
-	 * @throws \LFPhp\WeworkSdk\Exception\ConnectException
 	 */
 	public static function getUserinfo3rd($suite_access_token, $code){
 		$url = '/cgi-bin/service/getuserinfo3rd?suite_access_token='.$suite_access_token;
 		$params = [
 			'code' => $code,
 		];
-		$rsp = self::sendRequest($url, $params, false);
+		$rsp = self::getJson($url, $params);
 		$rsp->assertSuccess();
 		$data = [
 			'corp_id'     => $rsp->get('CorpId'),
@@ -235,14 +229,13 @@ class Auth extends Service {
 	 *      avatar => 头像url
 	 *      qr_code => 员工个人二维码（扫描可添加为外部联系人），仅在用户同意snsapi_privateinfo授权时返回
 	 * ]
-	 * @throws ConnectException
 	 */
 	public static function getuserdetail3rd($suite_access_toekn, $user_ticket){
 		$url = '/cgi-bin/service/getuserdetail3rd?suite_access_token='.$suite_access_toekn;
 		$params = [
 			'user_ticket' => $user_ticket,
 		];
-		$rsp = self::sendRequest($url, $params);
+		$rsp = self::postJson($url, $params);
 		$rsp->assertSuccess();
 		$data = [
 			'corp_id'   => $rsp->get('corpid'),
@@ -274,7 +267,7 @@ class Auth extends Service {
 			'access_token' => $access_token,
 			'code'         => $code,
 		];
-		$rsp = self::sendRequest($url, $params, false);
+		$rsp = self::getJson($url, $params);
 		$rsp->assertSuccess();
 		return [
 			'user_id'         => $rsp->get('UserId'),
@@ -290,14 +283,12 @@ class Auth extends Service {
 	 * @param $access_token
 	 * @param $agentid
 	 * @return \LFPhp\WeworkSdk\Base\Response
-	 * @throws ConnectException
 	 */
 	public static function getAgentDetail($access_token, $agentid){
 		$url = '/cgi-bin/agent/get?access_token='.$access_token;
-		$params = [
+		$rsp = self::getJson($url, [
 			'agentid' => $agentid,
-		];
-		$rsp = self::sendRequest($url, $params, false);
+		]);
 		$rsp->assertSuccess();
 
 		return $rsp->data;
@@ -310,8 +301,6 @@ class Auth extends Service {
 	 * @param $auth_corp_id
 	 * @param $permanent_code
 	 * @return mixed|null
-	 * @throws \GuzzleHttp\Exception\GuzzleException
-	 * @throws \LFPhp\WeworkSdk\Exception\ConnectException
 	 */
 	public static function getAuthInfo($suite_access_token, $auth_corp_id, $permanent_code){
 		$url = '/cgi-bin/service/get_auth_info?suite_access_token='.$suite_access_token;
@@ -319,7 +308,7 @@ class Auth extends Service {
 			'auth_corpid'    => $auth_corp_id,
 			'permanent_code' => $permanent_code,
 		];
-		$rsp = self::sendRequest($url, $params);
+		$rsp = self::postJson($url, $params);
 		$rsp->assertSuccess();
 
 		return $rsp->data;
@@ -332,8 +321,6 @@ class Auth extends Service {
 	 * @param $template_id
 	 * @param string $state 标示
 	 * @return mixed|null
-	 * @throws \GuzzleHttp\Exception\GuzzleException
-	 * @throws \LFPhp\WeworkSdk\Exception\ConnectException
 	 */
 	public static function getRegisterCode($provider_access_token, $template_id, $state){
 		$url = '/cgi-bin/service/get_register_code?provider_access_token='.$provider_access_token;
@@ -342,7 +329,7 @@ class Auth extends Service {
 			'template_id'           => $template_id,
 			'state'                 => $state,
 		];
-		$rsp = self::sendRequest($url, $params);
+		$rsp = self::postJson($url, $params);
 		$rsp->assertSuccess();
 
 		return $rsp->data;
@@ -352,8 +339,6 @@ class Auth extends Service {
 	 * 注册码注册成功，解除通讯录锁定
 	 * @param string $access_token 注册成功后返回的access_token
 	 * @return bool
-	 * @throws ConnectException
-	 * @throws \GuzzleHttp\Exception\GuzzleException
 	 */
 	public static function contactSyncSuccess($access_token){
 		$url = '/cgi-bin/sync/contact_sync_success?access_token='.$access_token;
@@ -361,7 +346,7 @@ class Auth extends Service {
 			'access_token' => $access_token,
 		];
 
-		$rsp = self::sendRequest($url, $params, false);
+		$rsp = self::getJson($url, $params);
 		$rsp->assertSuccess();
 
 		return true;
@@ -373,8 +358,6 @@ class Auth extends Service {
 	 * @param $access_token
 	 * @param $corp_id
 	 * @return string
-	 * @throws ConnectException
-	 * @throws \GuzzleHttp\Exception\GuzzleException
 	 */
 	public static function toOpenCorpId($access_token, $corp_id){
 		$url = '/cgi-bin/corp/to_open_corpid?access_token='.$access_token;
@@ -382,7 +365,7 @@ class Auth extends Service {
 			'corpid'       => $corp_id,
 			'access_token' => $access_token,
 		];
-		$rsp = self::sendRequest($url, $params);
+		$rsp = self::postJson($url, $params);
 		$rsp->assertSuccess();
 		return $rsp->get('open_corpid');
 	}

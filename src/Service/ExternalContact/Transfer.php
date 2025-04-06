@@ -12,7 +12,6 @@ class Transfer extends AuthorizedService {
 	 * @param array $external_userid
 	 * @param string $transfer_success_msg
 	 * @return array|mixed
-	 * @throws \LFPhp\WeworkSdk\Exception\ConnectException
 	 * 权限说明：
 	 * 企业需要使用“客户联系”secret或配置到“可调用应用”列表中的自建应用secret所获取的accesstoken来调用（accesstoken如何获取？）。
 	 * 第三方应用需拥有“企业客户权限->客户联系->在职继承”权限
@@ -46,7 +45,7 @@ class Transfer extends AuthorizedService {
 		if($transfer_success_msg){
 			$params['transfer_success_msg'] = $transfer_success_msg;
 		}
-		$rsp = self::sendRequest($url, $params);
+		$rsp = self::postJson($url, $params);
 		$rsp->assertSuccess();
 		return $rsp->get('customer');
 	}
@@ -58,7 +57,6 @@ class Transfer extends AuthorizedService {
 	 * @param string $takeover_userid
 	 * @param array $external_userid
 	 * @return array|mixed
-	 * @throws \LFPhp\WeworkSdk\Exception\ConnectException
 	 */
 	public static function transferResignedCustomer(string $handover_userid, string $takeover_userid, array $external_userid){
 		$url = '/cgi-bin/externalcontact/resigned/transfer_customer';
@@ -67,7 +65,7 @@ class Transfer extends AuthorizedService {
 			'takeover_userid' => $takeover_userid,
 			'external_userid' => $external_userid,
 		];
-		$rsp = self::sendRequest($url, $params);
+		$rsp = self::postJson($url, $params);
 		$rsp->assertSuccess();
 		return $rsp->get('customer');
 	}
@@ -79,7 +77,6 @@ class Transfer extends AuthorizedService {
 	 * @param string $takeover_userid 接替成员的userid
 	 * @param $cursor
 	 * @return array
-	 * @throws \LFPhp\WeworkSdk\Exception\ConnectException
 	 */
 	public static function transferResult(string $handover_userid, string $takeover_userid, $cursor): array{
 		$url = '/cgi-bin/externalcontact/transfer_result';
@@ -88,7 +85,7 @@ class Transfer extends AuthorizedService {
 			'takeover_userid' => $takeover_userid,
 			'cursor'          => $cursor,
 		];
-		$rsp = self::sendRequest($url, $params);
+		$rsp = self::postJson($url, $params);
 		$rsp->assertSuccess();
 		$customer = $rsp->get('customer');
 		$next_cursor = $rsp->get('next_cursor');
@@ -102,8 +99,6 @@ class Transfer extends AuthorizedService {
 	 * @param string $takeover_userid 接替成员的userid
 	 * @param $cursor
 	 * @return array
-	 * @throws \GuzzleHttp\Exception\GuzzleException
-	 * @throws \LFPhp\WeworkSdk\Exception\ConnectException
 	 */
 	public static function transferResignedResult(string $handover_userid, string $takeover_userid, $cursor){
 		$url = '/cgi-bin/externalcontact/resigned/transfer_result';
@@ -112,7 +107,7 @@ class Transfer extends AuthorizedService {
 			'takeover_userid' => $takeover_userid,
 			'cursor'          => $cursor,
 		];
-		$rsp = self::sendRequest($url, $params);
+		$rsp = self::postJson($url, $params);
 		$rsp->assertSuccess();
 		$customer = $rsp->get('customer');
 		$next_cursor = $rsp->get('next_cursor');
@@ -126,7 +121,6 @@ class Transfer extends AuthorizedService {
 	 * @param int $page_size 每次返回的最大记录数，默认为1000，最大值为1000
 	 * @param string $cursor
 	 * @return array
-	 * @throws \LFPhp\WeworkSdk\Exception\ConnectException
 	 * @becarful 当page_id为1，page_size为100时，表示取第101到第200条记录。由于每个成员的客户数不超过5万，故page_id*page_size 必须小于5万。
 	 */
 	public static function getUnassignedList(int $page_id, int $page_size, string $cursor = ''): array{
@@ -136,7 +130,7 @@ class Transfer extends AuthorizedService {
 			'page_size' => $page_size,
 			'cursor'    => $cursor,
 		];
-		$rsp = self::sendRequest($url, $params);
+		$rsp = self::postJson($url, $params);
 		$rsp->assertSuccess();
 		$info = $rsp->get('info');
 		$is_last = $rsp->get('is_last');
@@ -151,7 +145,6 @@ class Transfer extends AuthorizedService {
 	 * @param array $chat_id_list
 	 * @param string $new_owner
 	 * @return array
-	 * @throws \LFPhp\WeworkSdk\Exception\ConnectException
 	 */
 	public static function transferGroupchat(array $chat_id_list, string $new_owner): array{
 		$url = '/cgi-bin/externalcontact/groupchat/transfer';
@@ -159,7 +152,7 @@ class Transfer extends AuthorizedService {
 			'chat_id_list' => $chat_id_list,
 			'new_owner'    => $new_owner,
 		];
-		$rsp = self::sendRequest($url, $params);
+		$rsp = self::postJson($url, $params);
 		$rsp->assertSuccess();
 		return $rsp->get('failed_chat_list');
 	}
