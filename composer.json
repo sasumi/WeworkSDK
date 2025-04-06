@@ -1,0 +1,22 @@
+{
+    "name": "lfphp/weworksdk",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "LFPhp\\WeworkSdk\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "sasumi",
+            "email": "cnsasumi@gmail.com"
+        }
+    ],
+    "require": {
+        "lfphp/logger": "^2.0",
+        "guzzlehttp/guzzle": "^7.9"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.6"
+    }
+}
