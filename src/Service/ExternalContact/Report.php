@@ -1,6 +1,7 @@
 <?php
 namespace LFPhp\WeworkSdk\Service\ExternalContact;
 
+use Exception;
 use LFPhp\WeworkSdk\Base\AuthorizedService;
 
 /**
@@ -20,7 +21,7 @@ class Report extends AuthorizedService {
 	 */
 	public static function getUserBehaviorData($start_time, $end_time, $user_id_list = [], $party_id_list = []){
 		if(!$user_id_list && !$party_id_list){
-			throw new \Exception('User id list or party id list required');
+			throw new Exception('User id list or party id list required');
 		}
 		$url = '/cgi-bin/externalcontact/get_user_behavior_data';
 		$param = [
@@ -29,10 +30,8 @@ class Report extends AuthorizedService {
 			"start_time" => $start_time,
 			"end_time"   => $end_time,
 		];
-		//需要用post方法
 		$rsp = self::postJson($url, $param);
 		if(isset($rsp->data['errcode']) && $rsp->data['errcode'] == 40003){
-			//无效的userId返回空数组
 			return [];
 		}
 		$rsp->assertSuccess();

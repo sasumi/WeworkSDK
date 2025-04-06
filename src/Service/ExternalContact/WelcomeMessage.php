@@ -16,7 +16,6 @@ class WelcomeMessage extends AuthorizedService {
 	public static function sendMessage($welcome_code, $msg_info){
 		$url = '/cgi-bin/externalcontact/send_welcome_msg';
 		$param = array_merge(['welcome_code' => $welcome_code], $msg_info);
-		$rsp = self::postJson($url, $param);
-		return $rsp;
+		return self::postJson($url, $param);
 	}
 }

@@ -119,8 +119,7 @@ class Auth extends Service {
 			//			'redirect_uri' => urlencode(trim(env('WEWORK_AUTH_CALLBACK_URL')).$app_id),
 			//			'state' => $this->getAuthUrlState(),
 		];
-		$base_uri = 'https://open.work.weixin.qq.com/3rdapp/install?'.http_build_query($query);
-		return $base_uri;
+		return 'https://open.work.weixin.qq.com/3rdapp/install?'.http_build_query($query);
 	}
 
 	/**
@@ -204,7 +203,7 @@ class Auth extends Service {
 		];
 		$rsp = self::getJson($url, $params);
 		$rsp->assertSuccess();
-		$data = [
+		return [
 			'corp_id'     => $rsp->get('CorpId'),
 			'user_id'     => $rsp->get('UserId'),
 			'device_id'   => $rsp->get('DeviceId'),
@@ -212,7 +211,6 @@ class Auth extends Service {
 			'expires_in'  => $rsp->get('expires_in'),
 			'open_userid' => $rsp->get('open_userid'),
 		];
-		return $data;
 	}
 
 	/**
@@ -237,7 +235,7 @@ class Auth extends Service {
 		];
 		$rsp = self::postJson($url, $params);
 		$rsp->assertSuccess();
-		$data = [
+		return [
 			'corp_id'   => $rsp->get('corpid'),
 			'user_id'   => $rsp->get('userid'),
 			'user_name' => $rsp->get('name'),
@@ -245,7 +243,6 @@ class Auth extends Service {
 			'avatar'    => $rsp->get('avatar'),
 			'qr_code'   => $rsp->get('qr_code'),
 		];
-		return $data;
 	}
 
 	/**

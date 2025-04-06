@@ -1,6 +1,7 @@
 <?php
 namespace LFPhp\WeworkSdk\Service;
 
+use Exception;
 use LFPhp\Logger\Logger;
 use LFPhp\WeworkSdk\Base\AuthorizedService;
 
@@ -17,7 +18,7 @@ class JSApi extends AuthorizedService {
 	 */
 	public static function getJsSDKToken($page_url, $type, callable $js_api_ticket_cache_handler){
 		if(!$page_url){
-			throw new \Exception('Page url required');
+			throw new Exception('Page url required');
 		}
 		$logger = Logger::instance(__CLASS__);
 		$nonce_str = substr(md5(time().rand()), 0, 16);
@@ -29,7 +30,7 @@ class JSApi extends AuthorizedService {
 				$js_api_ticket = self::getCorpJsApiTicket($js_api_ticket_cache_handler);
 				break;
 			default:
-				throw new \Exception('Type required:'.$type);
+				throw new Exception('Type required:'.$type);
 		}
 
 		$timestamp = time();
@@ -53,8 +54,6 @@ class JSApi extends AuthorizedService {
 	public static function getCorpJsApiTicket(callable $js_api_ticket_cache_handler){
 		$url = '/cgi-bin/get_jsapi_ticket';
 		$access_token = self::getAccessToken();
-		$logger = Logger::instance(__CLASS__);
-
 		if($ticket = $js_api_ticket_cache_handler($access_token)){
 			return $ticket;
 		}
@@ -76,10 +75,7 @@ class JSApi extends AuthorizedService {
 	public static function getAppJsApiTicket(callable $js_api_ticket_cache_handler){
 		$url = '/cgi-bin/ticket/get';
 		$access_token = self::getAccessToken();
-		$logger = Logger::instance(__CLASS__);
-
 		if($ticket = $js_api_ticket_cache_handler($access_token)){
-			$logger->info('get_jsapi_ticket_app from cache:', $ticket);
 			return $ticket;
 		}
 		$rsp = self::getJson($url, ['type' => 'agent_config']);
@@ -87,8 +83,6 @@ class JSApi extends AuthorizedService {
 		$ticket = $rsp->get('ticket');
 		$expires_in = $rsp->get('expires_in');
 		$js_api_ticket_cache_handler($access_token, $ticket, $expires_in);
-		$logger->info("jsapi_debug", "get_app_ticket_get:".$rsp->toJSON());
-		$logger->info('get_jsapi_ticket_app rsp', $rsp->toJSON());
 		return $ticket;
 	}
 }

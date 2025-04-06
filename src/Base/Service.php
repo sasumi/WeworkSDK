@@ -13,6 +13,7 @@ abstract class Service {
 	const WEWORK_HOST = 'https://qyapi.weixin.qq.com';
 
 	protected static function getJson($url, $param){
+		$url = self::patchHost($url);
 		$curl_ret = curl_get($url, $param);
 		if(!curl_query_json_success($curl_ret, $json, $error)){
 			throw new Exception($error);
@@ -21,6 +22,7 @@ abstract class Service {
 	}
 
 	protected static function postJson($url, $param){
+		$url = self::patchHost($url);
 		$curl_ret = curl_post_json($url, $param);
 		if(!curl_query_json_success($curl_ret, $json, $error)){
 			throw new Exception($error);
@@ -29,6 +31,7 @@ abstract class Service {
 	}
 
 	protected static function postFile($url, $param, $file_map){
+		$url = self::patchHost($url);
 		$curl_ret = curl_post_file($url, $file_map, $param);
 		return self::handleResponse($curl_ret);
 	}
@@ -56,5 +59,12 @@ abstract class Service {
 		$logger = Logger::instance(__CLASS__);
 		$logger->error('Service response error', $json, $tech_msg);
 		return Response::error($friendly_msg, array_merge($json, ['tech_msg' => $tech_msg]), $json['errcode']);
+	}
+
+	private static function patchHost($url){
+		if(stripos($url, 'http') !== 0){
+			$url = self::WEWORK_HOST.$url;
+		}
+		return $url;
 	}
 }
