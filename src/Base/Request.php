@@ -2,6 +2,7 @@
 
 namespace LFPhp\WeworkSdk\Base;
 
+use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 use LFPhp\Logger\Logger;
@@ -47,7 +48,7 @@ class Request {
 	 */
 	public function sendInJson($url, $param, $in_post, $files = []){
 		if(!$this->config['host']){
-			throw new \Exception('Request host required');
+			throw new Exception('Request host required');
 		}
 		$client = new Client([
 			'base_uri' => $this->config['host'],
@@ -58,7 +59,7 @@ class Request {
 		$logger->debug('Request start', $url, $param);
 
 		if(!$in_post && $files){
-			throw new \Exception('Upload file require [POST] method');
+			throw new Exception('Upload file require [POST] method');
 		}
 
 		if($in_post){
